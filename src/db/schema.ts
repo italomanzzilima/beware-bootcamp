@@ -8,12 +8,6 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 
-// user table definition
-// export const userTable = pgTable("users", {
-//   id: uuid().primaryKey().defaultRandom(),
-//   name: text().notNull(),
-// });
-
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -30,7 +24,7 @@ export const userTable = pgTable("user", {
     .notNull(),
 });
 
-export const session = pgTable("session", {
+export const sessionTable = pgTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
@@ -43,7 +37,7 @@ export const session = pgTable("session", {
     .references(() => userTable.id, { onDelete: "cascade" }),
 });
 
-export const account = pgTable("account", {
+export const accountTable = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
@@ -119,3 +113,9 @@ export const productVariantRelations = relations(
     }),
   }),
 );
+
+export const schema = {
+  userTable,
+  sessionTable,
+  accountTable,
+};

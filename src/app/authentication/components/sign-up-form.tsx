@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { authClient } from "@/lib/auth-client";
 
 import {
   Form,
@@ -23,6 +24,8 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -41,6 +44,7 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 const SignUpForm = () => {
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,8 +55,27 @@ const SignUpForm = () => {
     },
   });
 
-  function onSubmit(data: FormValues) {
-    console.log("Form submitted:", data);
+  async function onSubmit(values: FormValues) {
+    await authClient.signUp.email({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          if (error.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("Email Já cadastrado.");
+            form.setError("email", {
+              message: "Email Já cadastrado.",
+            });
+            return;
+          }
+          toast.error(error.error.message);
+        },
+      },
+    });
   }
 
   return (
