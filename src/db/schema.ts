@@ -55,6 +55,19 @@ export const accountTable = pgTable("account", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
+export const verificationTable = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date(),
+  ),
+});
+
 // category table definition and relations
 export const categoryTable = pgTable("categories", {
   id: uuid().primaryKey().defaultRandom(),
@@ -118,4 +131,5 @@ export const schema = {
   userTable,
   sessionTable,
   accountTable,
+  verificationTable,
 };
