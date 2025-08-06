@@ -5,7 +5,7 @@ import SignUpForm from "./components/sign-up-form";
 
 const Authentication = () => {
   return (
-    <div className="flex w-full max-w-sm flex-col gap-6 p-5">
+    <div className="flex w-full flex-col gap-6 p-5">
       <Tabs defaultValue="sign-in">
         {/* Tab List*/}
         <TabsList>
@@ -13,11 +13,11 @@ const Authentication = () => {
           <TabsTrigger value="sign-up">Criar Conta</TabsTrigger>
         </TabsList>
         {/* Sign in form*/}
-        <TabsContent value="sign-in">
+        <TabsContent value="sign-in" className="w-full">
           <SignInForm />
         </TabsContent>
         {/* Sign up form*/}
-        <TabsContent value="sign-up">
+        <TabsContent value="sign-up" className="w-full">
           <SignUpForm />
         </TabsContent>
       </Tabs>
