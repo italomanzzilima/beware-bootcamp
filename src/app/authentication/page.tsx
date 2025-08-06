@@ -5,7 +5,7 @@ import SignUpForm from "./components/sign-up-form";
 
 const Authentication = () => {
   return (
-    <div className="flex w-full flex-col gap-6 p-5">
+    <div className="flex h-[100dvh] w-full flex-col gap-6 p-5">
       <Tabs defaultValue="sign-in">
         {/* Tab List*/}
         <TabsList>
