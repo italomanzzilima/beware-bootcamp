@@ -1,9 +1,9 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import { text } from "stream/consumers";
 
 interface ProductItemProps {
   product: typeof productTable.$inferSelect & {
@@ -22,8 +22,9 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
       <Image
         src={firstVariant.imageUrl}
         alt={firstVariant.name}
-        height={150}
-        width={150}
+        sizes="100vw"
+        height={0}
+        width={0}
         className="h-auto w-full rounded-3xl"
       />
       <div

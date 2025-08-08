@@ -1,17 +1,12 @@
 "use client";
-import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -20,23 +15,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 const formSchema = z.object({
-  email: z.email("Email inválido"),
-  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+  email: z.email("E-mail inválido!"),
+  password: z.string("Senha inválida!").min(8, "Senha inválida!"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 const SignInForm = () => {
   const router = useRouter();
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,13 +52,19 @@ const SignInForm = () => {
           router.push("/");
         },
         onError: (ctx) => {
+          if (ctx.error.code === "USER_NOT_FOUND") {
+            toast.error("E-mail não encontrado.");
+            return form.setError("email", {
+              message: "E-mail não encontrado.",
+            });
+          }
           if (ctx.error.code === "INVALID_EMAIL_OR_PASSWORD") {
-            toast.error("Email ou Senha invalidos");
+            toast.error("E-mail ou senha inválidos.");
             form.setError("password", {
-              message: "Email ou Senha invalidos",
+              message: "E-mail ou senha inválidos.",
             });
             return form.setError("email", {
-              message: "Email ou Senha invalidos",
+              message: "E-mail ou senha inválidos.",
             });
           }
           toast.error(ctx.error.message);
@@ -69,12 +73,11 @@ const SignInForm = () => {
     });
   }
 
-  async function handleSignInWithGoogle() {
+  const handleSignInWithGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
     });
-  }
-
+  };
   return (
     <>
       <Card className="w-full">
@@ -82,21 +85,18 @@ const SignInForm = () => {
           <CardTitle>Entrar</CardTitle>
           <CardDescription>Faça login para continuar.</CardDescription>
         </CardHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <CardContent className="grid gap-6">
               <FormField
                 control={form.control}
                 name="email"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Digite seu email"
-                        type="email"
-                        {...form.register("email")}
-                      />
+                      <Input placeholder="Digite seu email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,14 +105,14 @@ const SignInForm = () => {
               <FormField
                 control={form.control}
                 name="password"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Digite sua senha"
                         type="password"
-                        {...form.register("password")}
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -121,7 +121,7 @@ const SignInForm = () => {
               />
             </CardContent>
             <CardFooter className="flex flex-col gap-2">
-              <Button type="submit" className="mt-5 w-full">
+              <Button type="submit" className="w-full">
                 Entrar
               </Button>
               <Button
